@@ -34,12 +34,17 @@ for key, value in enumerate(sorted_mannheimdata['Refdatum']):
         
         dict_with_values[value[:10]].append(np.array(sorted_mannheimdata['AnzahlFall'])[key])
 
-dict_with_means = {}
+corona_faelle = {}
 keys_of_dict = list(dict_with_values.keys())
 
 for key, value in enumerate(dict_with_values):
     value = np.array(dict_with_values[keys_of_dict[key]])
-    dict_with_means[keys_of_dict[key]] = np.sum(value)
+    corona_faelle[keys_of_dict[key]] = np.sum(value)
+
+pd_corona_faelle = pd.DataFrame.from_dict(corona_faelle, orient='index', columns=['Anzahl'])
+pd_corona_faelle = pd_corona_faelle[pd_corona_faelle.index <= '2020/12/31' ]
+
+
 
 covid_mannheim_2020 = sorted_mannheimdata[sorted_mannheimdata['Refdatum'] <= '2020/12/31 00:00:00' ]
 plt.plot(covid_mannheim_2020['Refdatum'],covid_mannheim_2020['AnzahlFall'])
