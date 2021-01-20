@@ -2,6 +2,8 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 from datetime import datetime
 import numpy as np
+from scipy.stats import pearsonr
+import operator
 
 covid_data = pd.read_csv('RKI_COVID19.csv')
 feinstaub_data = pd.read_csv('Luftqualitaet.csv',sep=';')
@@ -9,6 +11,7 @@ feinstaub_data = pd.read_csv('Luftqualitaet.csv',sep=';')
 
 mannheim_data = covid_data[covid_data['Landkreis'] == 'SK Mannheim' ]
 sorted_mannheimdata = mannheim_data.sort_values(by='Refdatum')
+sorted_mannheimdata = sorted_mannheimdata[sorted_mannheimdata['Refdatum'] <= '2020/12/31 00:00:00' ]
 
 sorted_feinstaubdata = feinstaub_data[feinstaub_data['Feinstaub (PM₁₀) stündlich gleitendes Tagesmittel in µg/m³'] != '-']
 new = sorted_feinstaubdata[:-2]
@@ -34,14 +37,45 @@ for key, value in enumerate(sorted_mannheimdata['Refdatum']):
         
         dict_with_values[value[:10]].append(np.array(sorted_mannheimdata['AnzahlFall'])[key])
 
-dict_with_means = {}
+corona_faelle = {}
 keys_of_dict = list(dict_with_values.keys())
 
 for key, value in enumerate(dict_with_values):
     value = np.array(dict_with_values[keys_of_dict[key]])
-    dict_with_means[keys_of_dict[key]] = np.sum(value)
+    corona_faelle[keys_of_dict[key]] = np.sum(value)
 
-covid_mannheim_2020 = sorted_mannheimdata[sorted_mannheimdata['Refdatum'] <= '2020/12/31 00:00:00' ]
-plt.plot(covid_mannheim_2020['Refdatum'],covid_mannheim_2020['AnzahlFall'])
+pd_corona_faelle = pd.DataFrame.from_dict(corona_faelle, orient='index', columns=['Anzahl'])
+pd_corona_faelle = pd_corona_faelle[pd_corona_faelle.index <= '2020/12/31' ]
 
-plt.plot(new_date,new['Feinstaub (PM₁₀) stündlich gleitendes Tagesmittel in µg/m³'])
+sorted_feinstaubdata = feinstaub_data[feinstaub_data['Feinstaub (PM₁₀) stündlich gleitendes Tagesmittel in µg/m³'] != '-']
+new = sorted_feinstaubdata[:-2]
+
+fs_dict_with_values = {}
+
+for key, value in enumerate(sorted_feinstaubdata['Datum']):
+    if type(value) is float:
+        break;
+        
+    new_date = str(datetime.strptime(value[:10],"%d.%m.%Y"))[:10]
+    
+    if new_date not in fs_dict_with_values:
+        
+        fs_dict_with_values[new_date] = [np.array(sorted_feinstaubdata['Feinstaub (PM₁₀) stündlich gleitendes Tagesmittel in µg/m³'])[key]]
+    else:
+        
+        fs_dict_with_values[new_date].append(np.array(sorted_feinstaubdata['Feinstaub (PM₁₀) stündlich gleitendes Tagesmittel in µg/m³'])[key])
+
+fs_dict_with_values.pop('2021-01-01')
+
+for datum in fs_dict_with_values.keys():
+    
+    if datum.replace("-", "/") not in corona_faelle.keys():
+        corona_faelle[datum.replace("-", "/")] = 0
+    
+    fs_dict_with_values[datum] = np.mean(np.array(fs_dict_with_values[datum]))
+        
+sorted_dict = sorted(corona_faelle.items(), key=operator.itemgetter(1))
+
+plt.scatter(fs_dict_with_values.values(), corona_faelle.values())
+
+corr,_= pearsonr(fs_dict_with_values.values(), corona_faelle.values())
