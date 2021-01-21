@@ -4,6 +4,7 @@ from datetime import datetime
 import numpy as np
 from scipy.stats import pearsonr
 import operator
+import collections
 
 covid_data = pd.read_csv('RKI_COVID19.csv')
 feinstaub_data = pd.read_csv('Luftqualitaet.csv',sep=';')
@@ -74,8 +75,13 @@ for datum in fs_dict_with_values.keys():
     
     fs_dict_with_values[datum] = np.mean(np.array(fs_dict_with_values[datum]))
         
-sorted_dict = sorted(corona_faelle.items(), key=operator.itemgetter(1))
+sorted_dict = collections.OrderedDict(sorted(corona_faelle.items()))
+#sorted_dict = corona_faelle['Datum']    
+#for datum in sorted_dict:
+   # sorted_dict['Dat']
 
-plt.scatter(fs_dict_with_values.values(), corona_faelle.values())
+plt.scatter(fs_dict_with_values.values(), sorted_dict.values())
 
-corr,_= pearsonr(fs_dict_with_values.values(), corona_faelle.values())
+listed = list(sorted_dict.values())
+
+corr,_= pearsonr(list(fs_dict_with_values.values()), listed) #anpassung zur Liste
