@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import numpy as np
 from scipy.stats import pearsonr
-import operator
+
 import collections
 from scipy.ndimage.filters import uniform_filter1d
 
@@ -93,8 +93,8 @@ plt.scatter(fs_dict_with_values.values(), sorted_dict.values())
 anzahl_faelle_list = list(sorted_dict.values())
 anzahl_tode_list = list(sorted_dict_tote.values())
 
-#corr,_= pearsonr(list(fs_dict_with_values.values()), anzahl_faelle_list) #anpassung zur Liste
-corr,_= pearsonr(anzahl_tode_list, anzahl_faelle_list) #anpassung zur Liste
+corr,_= pearsonr(list(fs_dict_with_values.values()), anzahl_faelle_list) #anpassung zur Liste
+#corr,_= pearsonr(anzahl_tode_list, anzahl_faelle_list) #anpassung zur Liste
 
 #plt.scatter(anzahl_faelle_list, anzahl_tode_list)
 
@@ -112,11 +112,11 @@ axs[1,1].scatter(anzahl_faelle_list[:-3], anzahl_tode_list[3:])
 #axs[4].scatter(anzahl_faelle_list[:-4], anzahl_tode_list[4:])
 
 for i in range(1,25):
-    corr,_= pearsonr(anzahl_faelle_list[220:-i], anzahl_tode_list[(i+220):])
+    corr,_ = pearsonr(anzahl_faelle_list[200:-i], anzahl_tode_list[(i+200):])
     print(corr)
 
 
-N = 3
+N = 7
 anzahl_faelle_list_rm = uniform_filter1d(anzahl_faelle_list, size=N)
 anzahl_tode_list_rm = uniform_filter1d(anzahl_tode_list, size=N)
 
