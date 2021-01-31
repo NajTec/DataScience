@@ -19,8 +19,8 @@ sorted_feinstaubdata = feinstaub_data[feinstaub_data['Feinstaub (PM₁₀) stün
 new = sorted_feinstaubdata[:-2]
 
 #print(feinstaub_data.head())
-print(type(sorted_feinstaubdata['Datum'][0]))
-print(type(covid_data['Refdatum'][0]))
+#print(type(sorted_feinstaubdata['Datum'][0]))
+#print(type(covid_data['Refdatum'][0]))
 
 #print(new)
 #date_ = [x.replace("'","") for x in new ]
@@ -116,7 +116,7 @@ for i in range(1,25):
     print(corr)
 
 
-N = 3
+N = 7
 anzahl_faelle_list_rm = uniform_filter1d(anzahl_faelle_list, size=N)
 anzahl_tode_list_rm = uniform_filter1d(anzahl_tode_list, size=N)
 
@@ -127,7 +127,7 @@ corrs = []
 for i in range(1,50):
     corr,_= pearsonr(anzahl_faelle_list_rm[:-i], anzahl_tode_list_rm[i:])
     corrs.append(corr)
-    print(corr)
+    #print(corr)
     
    
 print(np.max(corrs))

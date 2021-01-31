@@ -92,6 +92,11 @@ sorted_feinstaub_data_mannheim_nach_datum = collections.OrderedDict(sorted(feins
 anzahl_faelle_list = list(sorted_neuinfektionen_nach_datum.values())
 anzahl_tode_list = list(sorted_todesfaelle_nach_datum.values())
 feinstaub_list = list(sorted_feinstaub_data_mannheim_nach_datum.values())
+
+for key, value in enumerate(anzahl_faelle_list):
+    anzahl_faelle_list[key] = anzahl_faelle_list[key][0]
+    anzahl_tode_list[key] = anzahl_tode_list[key][0]
+
 #%%
 
 plt.scatter(feinstaub_list, anzahl_faelle_list)
@@ -129,7 +134,7 @@ plt.show()
 
 corrs = []
 for i in range(1,50):
-    corr,p= pearsonr(anzahl_faelle_list_rm[220:-i], anzahl_tode_list_rm[220+i:])
+    corr,p= pearsonr(anzahl_faelle_list_rm[:-i], anzahl_tode_list_rm[i:])
     corrs.append(corr)
     
 plt.plot(corrs)
@@ -137,7 +142,7 @@ plt.xlabel("Korrelation im Täglichen shift (Mannheim)")
 plt.show()
 
 #%%
-
+"""
 covid_data_germany = pd.read_csv('covid-19.csv',sep=';')
 
 faelle_nach_datum = list(covid_data_germany['Faelle'])
@@ -177,3 +182,4 @@ for i in range(1,50):
     
 plt.plot(corrs)
 plt.show()
+"""
